@@ -60,3 +60,27 @@ pyenv global 3.9.12
 
 For sanity check, type `python` and you should be entering Python 3.9.12 interface. Or, you can use command `pyenv which python`.
 To check the list of python versions you already installed, just run `pyenv versions`.
+
+
+## Using pyenv-virtualenv
+
+To create a virtual environment using pyenv, just type
+
+```bash
+pyenv virtualenv [version] [env_name]
+```
+
+For example, if I want to create a virtual environment using Python 3.9.7 and name it as `mlops-zoomcamp`, I just type:
+
+```bash
+pyenv virtualenv 3.9.7 mlops-zoomcamp
+```
+
+To activate it, I suggest you don't. You can use it directly in you desired workspace by attach it as local environment.
+For example, if you want to use the environment in mlops-zoomcamp directory, just `cd` inside it, and run command below:
+
+```bash
+pyenv local mlops-zoomcamp
+```
+
+Every time you enter the directory, the virtual environment will be activated automatically.
