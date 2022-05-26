@@ -84,3 +84,53 @@ pyenv local mlops-zoomcamp
 ```
 
 Every time you enter the directory, the virtual environment will be activated automatically.
+
+
+## Reserve External Static Address
+
+If you don't want the VM cost you much, you can stop it when you don't use it anymore and start it again once you need it.
+Unfortunately, by default, if you stop your VM and then start it again, you will have a different external IP address with the first one. It will make your ssh config in your local computer useless.
+
+Hence, we need to create (reserve) an external statis address for the VM so that it will use the same IP address and you don't have change your ssh config everytime you start the VM after stopping it.
+To do this, got to VPC Network, then IP addresses, then click "Reserve external static address" on the top of the UI.
+
+1. Name your external static address, for example `mlops-static-address`
+2. Choose the same region as the targeted VM, in my case it's in `us-central1 (Iowa)`
+3. Attach to the VM. You will find it available in the options if you use the same region.
+
+![](assets/images/external-static-address.png)
+
+Once you click "Reserve", you will find something like this.
+
+![](assets/images/successfull-external-address.png)
+
+
+## Jupyter without VSCode
+
+If you don't use VSCode and want to open up Jupyter, either notebook or lab, you still can do it through the remote server, a.k.a your VM on GCP.
+You can run the jupyter command in the VM, but you can't open it in your local browser. Hence, you need to configure the firewall rule to be able to access it.
+
+1. Once you've created your VM, go to VPC Network, then Firewall, then "Create firewall rule". Name the firewall rule and leave the configuration number 2 in the below image as is
+
+![](assets/images/create-firewall.png)
+
+2. Target all instances in your network.
+3. Use `0.0.0.0/0` as the source IPv4 ranges and specified the tcp number to be `8888` for jupyter server and `5000` for mlflow later.
+
+![](assets/images/firewall-rule.png)
+
+Now you still need to configure your jupyter configuration using. If you don't have one, just run below command to create a new one.
+
+```bash
+jupyter notebook --generate-config
+```
+
+Go to `.jupyter` directory from root directory, you will find `jupyter_notebook_config.py` file there, edit it by adding below codes anywhere inside the file.
+
+```python
+c = get_config()
+c.NotebookApp.ip = "0.0.0.0"
+```
+
+This will overwrite the default IP when you run `jupyter notebook` or `jupyter lab` to be `0.0.0.0` instead of `localhost` or `127.0.0.1`.
+Open your browser and go to `<your external static address>:8888`. You will see the jupyter interface.
